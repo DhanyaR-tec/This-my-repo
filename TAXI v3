@@ -1,0 +1,121 @@
+a=1
+b=2
+print(a+b)
+env =gym.make("Taxi-v3",render_mode="rgb_array")
+state = env.reset()
+print(state)
+state =env.step(0)   #South
+print(state)
+state =env.step(1)   #north
+print(state)
+state =env.step(2)   #East
+print(state)
+state =env.step(3)   #West
+print(state)
+state =env.step(4)   #pick-up
+print(state)
+state =env.step(5)   #Drop-off
+print(state)
+import matplotlib.pyplot as plt
+frame = env.render()
+# Display the image
+plt.imshow(frame)
+plt.axis('off')
+plt.show()
+import matplotlib.pyplot as plt
+import numpy as np
+import gymnasium as gym
+
+env = gym.make("Taxi-v3", render_mode='rgb_array')
+
+# Reset environment and get state
+state, info = env.reset()
+
+# Decode the state into taxi row, col, passenger, destination
+taxi_row, taxi_col, passenger_loc, destination = env.unwrapped.decode(state)
+
+# Modify taxi position (example: move to row=2, col=3)
+taxi_row = 2
+taxi_col = 3
+
+# Re-encode the modified state back into integer form
+new_state = env.unwrapped.encode(taxi_row, taxi_col, passenger_loc, destination)
+
+# Set environment to this new state
+env.unwrapped.s = new_state
+
+# Render and display
+frame = env.render()
+plt.imshow(frame)
+plt.axis('off')
+plt.show()
+#action space
+env.action_space
+#all the specs
+env.spec
+#maximum number of steps per episode
+env.spec.max_episode_steps
+reward threshold per episode
+env.spec.reward_threshold
+import gymnasium as gym
+
+env = gym.make("Taxi-v3", render_mode="rgb_array")
+state = env.reset()[0]
+print("State:", state)
+import gymnasium as gym
+
+env = gym.make("Taxi-v3", render_mode="rgb_array")
+state = env.reset()
+print("State:", state)
+import gymnasium as gym
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+
+# Create Taxi environment
+env = gym.make('Taxi-v3', render_mode='rgb_array')
+
+episodeNumber = 5
+timeSteps = 100
+
+for episode in range(episodeNumber):
+    result = env.reset()
+
+    if isinstance(result, tuple):
+        state = result[0]
+    else:
+        state = result
+
+    for t in range(timeSteps):
+        frame = env.render()
+        frame = np.array(frame)
+
+        # Squeeze the extra dimension if present, as render() might return a batch
+        if frame.ndim == 4:
+            frame = np.squeeze(frame, axis=0)
+
+        plt.imshow(frame)
+        plt.title(f"Episode {episode}, Step {t}")
+        plt.axis("off")
+        plt.show()
+
+        # Take random action
+        action = env.action_space.sample()
+        step_result = env.step(action)
+
+        # Handle both Gym API versions
+        if len(step_result) == 5:
+            state, reward, terminated, truncated, info = step_result
+        else:
+            state, reward, done, info = step_result
+            terminated, truncated = done, False
+
+        # Slow animation
+        time.sleep(0.1)
+
+        # End episode if taxi finishes passenger drop
+        if terminated or truncated:
+            print(f"Episode {episode} ended in {t+1} steps with reward {reward}")
+            break
+
+env.close()
